@@ -1,6 +1,6 @@
-import React from 'react';
-import { Box, Container, AppBar, Toolbar, Typography, Tabs, Tab } from '@mui/material';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
+import { AppBar, Toolbar, Tabs, Tab, Container } from '@mui/material';
+import { FC } from 'react';
 
 const tabs = [
   { label: '格式化校验', path: '/format' },
@@ -12,40 +12,47 @@ const tabs = [
   { label: 'Excel互转', path: '/excel' }
 ];
 
-const MainLayout: React.FC = () => {
+const MainLayout: FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
+
   const currentTab = tabs.findIndex(tab => tab.path === location.pathname) || 0;
 
-  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+  const handleChange = (_: React.SyntheticEvent, newValue: number) => {
     navigate(tabs[newValue].path);
   };
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-      <AppBar position="static">
+    <>
+      <AppBar position="static" color="default">
         <Toolbar>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            JSON 工具箱
-          </Typography>
+          <Tabs 
+            value={currentTab} 
+            onChange={handleChange}
+            variant="scrollable"
+            scrollButtons="auto"
+            textColor="primary"
+            indicatorColor="primary"
+            sx={{
+              '& .MuiTab-root': {
+                color: 'text.primary',
+                '&.Mui-selected': {
+                  color: 'primary.main',
+                  fontWeight: 'bold'
+                }
+              }
+            }}
+          >
+            {tabs.map((tab, index) => (
+              <Tab key={index} label={tab.label} />
+            ))}
+          </Tabs>
         </Toolbar>
       </AppBar>
-      <Box sx={{ borderBottom: 1, borderColor: 'divider', overflowX: 'auto' }}>
-        <Tabs
-          value={currentTab}
-          onChange={handleChange}
-          variant="scrollable"
-          scrollButtons="auto"
-        >
-          {tabs.map((tab) => (
-            <Tab key={tab.path} label={tab.label} />
-          ))}
-        </Tabs>
-      </Box>
-      <Container component="main" sx={{ flexGrow: 1, py: 4 }}>
+      <Container maxWidth="xl" sx={{ mt: 2 }}>
         <Outlet />
       </Container>
-    </Box>
+    </>
   );
 };
 
